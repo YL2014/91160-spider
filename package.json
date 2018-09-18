@@ -1,0 +1,35 @@
+{
+  "name": "160-spider",
+  "version": "0.0.1",
+  "description": "160-spider",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node bin/www",
+    "start": "nodemon",
+    "lint": "eslint .",
+    "test": "jest",
+    "test-cov": "npm run test -- --coverage",
+    "prod": "NODE_ENV=production node bin/www"
+  },
+  "keywords": [],
+  "author": "yl2014 <842237798@qq.com>",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "salak": "^2.0.0-beta.14"
+  },
+  "devDependencies": {
+    "eslint": "^4.13.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "jest": "^22.0.4",
+    "nodemon": "^1.14.7",
+    "supertest": "^3.0.0"
+  },
+  "engines": {
+    "node": ">= 7.6.0"
+  },
+  "license": "MIT"
+}

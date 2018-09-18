@@ -1,0 +1,14 @@
+{
+  "verbose": true,
+  "exec": "node --inspect-brk=9229 bin/www",
+  "ignore": [
+    "logs/*",
+    "public/*",
+    "runtime/*"
+  ],
+  "env": {
+    "NODE_ENV": "development",
+    "PORT": 3000
+  },
+  "ext": "js json"
+}
