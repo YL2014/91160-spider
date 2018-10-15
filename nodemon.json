@@ -1,10 +1,10 @@
 {
   "verbose": true,
-  "exec": "node --inspect-brk=9229 bin/www",
+  "exec": "npm run dev",
   "ignore": [
-    "logs/*",
+    "logs/",
     "public/*",
-    "runtime/*"
+    "runtime/"
   ],
   "env": {
     "NODE_ENV": "development",

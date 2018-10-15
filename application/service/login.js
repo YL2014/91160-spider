@@ -1,11 +1,11 @@
-const cheerio = require('cheerio')
+// const cheerio = require('cheerio')
 const Base = require('./base')
 
 class Login extends Base {
   constructor (...args) {
     super(...args)
-    this.cookie = super.cookie
-    this.url = this.config('url')
+    // this.cookie = super.cookie
+    this.urls = this.config('urls')
   }
 
   // 模块入口
@@ -16,7 +16,7 @@ class Login extends Base {
   // 登录，给后续接口提供cookie
   async login () {
     let { token, cookie } = await this.checkUser()
-    const res = await this.baseCurl(this.url.login, {
+    const res = await this.baseCurl(this.urls.login, {
       body: {
         username: this.config('username'),
         password: this.config('password'),
@@ -30,7 +30,7 @@ class Login extends Base {
       headers: {
         'Cookie': cookie
       }
-    })
+    }, 'login')
     const { data, headers } = res
     if (headers['set-cookie'] && headers['set-cookie'].length > 0) {
       const newCookie = headers['set-cookie'].join(';')
@@ -41,8 +41,8 @@ class Login extends Base {
 
   // 登录前验证
   async checkUser () {
-    let { token, cookie } = await this.getHomeToken()
-    const res = await this.baseCurl(this.url.checkUser, {
+    let { token, cookie } = await this.getLoginHomeCookie()
+    const res = await this.baseCurl(this.urls.checkUser, {
       body: {
         type: 'm',
         username: this.config('username'),
@@ -53,7 +53,7 @@ class Login extends Base {
       headers: {
         'Cookie': cookie
       }
-    })
+    }, 'login')
     const { data, headers } = res
     const { code } = data
     // code 1表示成功
@@ -67,14 +67,16 @@ class Login extends Base {
   }
 
   // 获取登录页面的cookie和token
-  async getHomeToken () {
-    const homeContent = await this.baseCurl(this.url.home, { methods: 'GET' })
-    const { data, headers } = homeContent
-    const $ = cheerio.load(data)
-    const token = $('#tokens').val()
-    const cookie = headers['set-cookie'].join(';')
-    return { token, cookie }
-  }
+  // async getHomeToken () {
+  //   const homeContent = await this.curl(this.urls.home, {
+  //     method: 'GET'
+  //   })
+  //   const { data, headers } = homeContent
+  //   const $ = cheerio.load(data)
+  //   const token = $('#tokens').val()
+  //   const cookie = headers['set-cookie'].join(';')
+  //   return { token, cookie }
+  // }
 }
 
 module.exports = Login

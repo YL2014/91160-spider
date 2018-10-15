@@ -4,7 +4,7 @@
   "description": "160-spider",
   "main": "index.js",
   "scripts": {
-    "dev": "node bin/www",
+    "dev": "node --inspect=9229 bin/www",
     "start": "nodemon",
     "lint": "eslint .",
     "test": "jest",

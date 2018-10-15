@@ -1,8 +1,7 @@
-const { Controller } = require('salak')
+const BaseController = require('./base')
 
-class Index extends Controller {
+class Index extends BaseController {
   async actionIndex () {
-    console.log(this.service('index').run)
     await this.service('index').run()
   }
 }
