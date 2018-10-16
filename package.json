@@ -15,6 +15,7 @@
   "author": "yl2014 <842237798@qq.com>",
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "fs-extra": "^7.0.0",
     "salak": "^2.0.0-beta.14"
   },
   "devDependencies": {

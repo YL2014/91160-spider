@@ -3,7 +3,8 @@ const BaseController = require('./base')
 class Hospital extends BaseController {
   // 获取医院信息
   async actionIndex () {
-    const data = await this.service('hospital').getHospital()
+    const { update = false } = this.query
+    const data = await this.service('hospital').getHospital(update)
     this.success(data)
   }
 

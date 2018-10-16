@@ -4,11 +4,13 @@ module.exports = (app) => {
     password: '123456',
     urls: {
       loginHome: 'https://user.91160.com/login.html', // 登录首页，需获取该页cookie'
-      home: 'https://www.91160.com/', // 首页，需获取该页cookie
+      home: 'https://weixin.91160.com/', // 首页，需获取该页cookie
       checkUser: 'https://user.91160.com/checkUser.html', // 登录前参数校验
       login: 'https://user.91160.com/login.html', // 登录
       hospital: 'https://www.91160.com/home/ajaxgetguahaourl.html', // 医院信息
       depbyunit: 'https://www.91160.com/ajax/getdepbyunit.html', // 科室信息
+      homeWx: 'https://weixin.91160.com',
+      loginWx: 'https://weixin.91160.com/user/login.html', // 微信登录
       doctors: 'https://weixin.91160.com/depart/getDepDoctorList.html', // 获取医生列表
       doctorSchedule: 'https://weixin.91160.com/doctor/schedule.html', // 获取医生放号信息
       detlnew: 'https://weixin.91160.com/doctor/detlnew.html', // 获取上午和下午具体时段放号信息

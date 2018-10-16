@@ -1,25 +1,29 @@
 const Base = require('./base')
 const cheerio = require('cheerio')
+const path = require('path')
+const fse = require('fs-extra')
 
 class Hospital extends Base {
   constructor (...args) {
     super(...args)
     this.urls = this.config('urls')
-    this.loginService = this.service('login')
   }
 
-  async start () {
-    await this.getHospital()
-  }
-  async _baseCurl (url, options) {
-
-  }
-
-  // 获取医院信息
-  async getHospital () {
-    const res = await this.baseCurl(this.urls.hospital)
-    const { data } = res
+  /**
+   * 获取医院列表
+   * @param {Boolean} update 是否强制从接口获取
+   */
+  async getHospital (update = false) {
+    // 不需要更新
+    const filePath = path.resolve(__dirname, '../config/hospital.json')
+    if (!update && await fse.pathExists(filePath)) {
+      const data = await fse.readJson(filePath)
+      return data
+    }
+    const data = await this.baseCurl(this.urls.hospital, {}, { platform: 'pc' })
     const arr = this._filterHospital(data.quikhospitals)
+    // 获取到的医院信息存文件
+    await fse.outputJson(filePath, arr)
     return arr
   }
 
@@ -41,14 +45,13 @@ class Hospital extends Base {
   /**
    * 获取医院的科室信息
    * 南山医院 131，反回的口腔修复科:770，口腔内科:769，拔牙:768
-   * @param {*} id 医院ID
+   * @param {Number} id 医院ID
    */
   async getDepartment (id = 131) {
-    const res = await this.baseCurl(this.urls.depbyunit, {
+    const data = await this.baseCurl(this.urls.depbyunit, {
       mtehod: 'POST',
       body: { keyValue: id }
-    })
-    const { data } = res
+    }, { platform: 'pc' })
     return data
   }
 
@@ -61,7 +64,7 @@ class Hospital extends Base {
    * @param valid 只输出可预约医生
    */
   async getDoctors ({ unitId, depId, size, p, valid }) {
-    const res = await this.baseCurl(this.urls.doctors, {
+    const data = await this.baseCurl(this.urls.doctors, {
       query: {
         unit_id: unitId,
         dep_id: depId,
@@ -70,7 +73,6 @@ class Hospital extends Base {
         date: ''
       }
     })
-    const { data } = res
     if (data.state !== 1) {
       throw Error(data.msg || '获取失败')
     }
@@ -88,13 +90,12 @@ class Hospital extends Base {
    * @param valid 只获取可预约信息
    */
   async getDoctorSchedule ({ doctorId, unitId, valid }) {
-    const res = await this.baseCurl(this.urls.doctorSchedule, {
+    const data = await this.baseCurl(this.urls.doctorSchedule, {
       query: {
         unit_id: unitId,
         doctor_ids: doctorId
       }
     })
-    const { data } = res
     const filterData = this._filterDoctorSchedule(data, unitId, valid)
     return filterData
   }
@@ -115,7 +116,7 @@ class Hospital extends Base {
     for (let key in wrap3) {
       let curInfo = wrap3[key]
       if (valid) {
-        if (curInfo.sch.am.y_state === '1' || curInfo.sch.pm.y_state === '1') {
+        if ((curInfo.sch.am && curInfo.sch.am.y_state === '1') || (curInfo.sch.pm && curInfo.sch.pm.y_state === '1')) {
           arr.push(curInfo)
         }
       } else {
@@ -133,7 +134,7 @@ class Hospital extends Base {
    *  - scheduleId 预约时段ID(上午或者下午)，通过getDoctorSchedule方法来获取
    */
   async getDetlNew ({ unitId, doctorId, depId, scheduleId }) {
-    const res = await this.baseCurl(this.urls.detlnew, {
+    const data = await this.baseCurl(this.urls.detlnew, {
       query: {
         unit_detl_map: JSON.stringify([{
           unit_id: unitId,
@@ -143,7 +144,6 @@ class Hospital extends Base {
         }])
       }
     })
-    const { data } = res
     if (data.status !== 1) {
       throw Error(data.msg)
     }
@@ -160,19 +160,14 @@ class Hospital extends Base {
    * @param mid 就医用户的mid
    */
   async getPageToken ({ unitId, schId, detlId, mid }) {
-    const { cookie } = await this.loginService.login()
-    const res = await this.baseCurl(this.urls.confirm, {
+    const data = await this.baseCurl(this.urls.confirm, {
       query: {
         unit_id: unitId,
         sch_id: schId,
         detl_id: detlId,
         mid
-      },
-      headers: {
-        'Cookie': cookie
       }
-    })
-    const { data } = res
+    }, { login: true })
     const $ = cheerio.load(data)
     const tokenKey = $('input[name=token_key]').val()
     return tokenKey
@@ -185,7 +180,7 @@ class Hospital extends Base {
    * @param token_key 页面token
    */
   async submit ({ mobile, mid, tokenKey }) {
-    const res = await this.baseCurl(this.urls.submit, {
+    const data = await this.baseCurl(this.urls.submit, {
       method: 'POST',
       body: {
         mobile,
@@ -196,8 +191,7 @@ class Hospital extends Base {
         insurance_alias: 0,
         setting_refresh: 0
       }
-    })
-    const { data } = res
+    }, { login: true })
     if (data.state !== 1) {
       throw Error(data.msg || '下单失败')
     }
