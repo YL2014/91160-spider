@@ -32,6 +32,10 @@ module.exports = (app) => {
     defaultLevel: 'info'
   }
 
+  config.httpClient = {
+    dataType: 'json'
+  }
+
   config.curl = {
     beforeRequest (request) {
       app.logger.debug(request)
@@ -58,6 +62,13 @@ module.exports = (app) => {
     doctorIds: [ // 医生ID合集，可以从接口获取
       123456
     ]
+  }
+
+  config.wx = {
+    token: 'test',
+    secret: '',
+    appId: '',
+    templateId: '76pAHH9MScX08zR2ZsuZytcPqZUjBXv5EHOdW4rGT_w'
   }
 
   return config
